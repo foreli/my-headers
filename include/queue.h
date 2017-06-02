@@ -67,7 +67,7 @@ private:
     size_t _size;
 	int _max;
 public:
-    queue(int max = 256);
+    queue(int max = -1);
     queue(const queue&)=delete;
     ~queue();
 

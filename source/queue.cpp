@@ -1,6 +1,5 @@
 #include "queue.h"
 #include <iostream>
-#include "constants.h"
 #include "my_string.h"
 #include <stdexcept>
 
@@ -18,14 +17,6 @@ queue<T>::~queue() {
         _head = _head->get_next();
         delete curr;
     }
-
-    /*
-    for (size_t i = 0; i < _size; i++) {
-        curr_next = curr->get_next();
-        delete curr;
-        curr = curr_next;
-    }
-    */
 }
 
 template <typename T>
@@ -60,7 +51,9 @@ T queue<T>::pop() {
 }
 
 template <typename T>
-bool queue<T>::full() { return (int) _size == _max; }
+bool queue<T>::full() { 
+	return ((int) _size == _max) && (_max > 0);
+}
 
 template <typename T>
 T &queue<T>::peek() {
