@@ -1,40 +1,81 @@
-#ifndef JMS_HASH_TABLE_H
-#define JMS_HASH_TABLE_H
+#ifndef TRIES_HASH_TABLE_H
+#define TRIES_HASH_TABLE_H
 
+#include <cstdio>
+#include <cstring>
+#include "mstring.h"
 
-#include "my_string.h"
+namespace mstd {
 
-/* A simple hash table
- * Since we are not holding the key in the saved values
- * we keep two parallel index tables
- * The first for keys, the other for the actual entries
- *
- * A my_vector object is used to handle collisions
- *
- * The default size of the hashtable is 30
- */
-template <typename T>
-class hash_table {
+    template<typename B>
+    class hash_table {
+    private:
+        template<typename V>
+        struct hash_entry {
+            mstd::string _key;
+            V _value;
+        };
 
-private:
-    my_vector<my_string> *_keys;
-    my_vector<T> *_entries;
-    int _size;
+        mstd::vector<hash_entry<B>> *_entries;
+        size_t _size;
 
-    int _hash_func(my_string key);
-public:
+        int _hash_function(mstd::string key) {
+            char *str = new char[key.length() + 1];
+            char *tmp = str;
+            strcpy(str, key.c_str());
+            int hash = 5381;
+            int c;
 
-    hash_table(int size = 30);
-    ~hash_table();
+            while ((c = *tmp++))
+                hash = ((hash << 5) + hash) + c; /* hash * 33 + c */
 
-    void insert_key(my_string key, T ent);
+            // If we get a negative result, return -result
+            delete[] str;
+            return hash > 0 ? hash : -hash;
 
-    bool get_key(my_string key, T *val);
+        }
 
-    void set_key(my_string key, T ent);
+    public:
+        explicit hash_table(size_t size = 30) : _size(size) {
+            _entries = new mstd::vector<hash_entry<B>>[size];
+        }
 
-    bool remove_key(my_string key);
-};
+        hash_table(const hash_table &)=delete;
 
+        ~hash_table() {
+            delete[] _entries;
+        }
 
-#endif //JMS_HASH_TABLE_H
+        void put(mstd::string key, B val) {
+            hash_entry<B> tmp;
+            tmp._key = key;
+            tmp._value = val;
+            size_t index = _hash_function(key) % _size;
+            _entries[index].add(tmp);
+        }
+
+        bool get(mstd::string key, B *val) {
+            size_t index = _hash_function(key) % _size;
+            mstd::vector<hash_entry<B>> v = _entries[index];
+            for (int i = 0; i < v.size(); i++) {
+                if (v.get(i)._key == key) {
+                    *val = v.get(i)._value;
+                    return true;
+                }
+            }
+            return false;
+        }
+
+        void set(mstd::string key, B val) {
+            size_t index = _hash_function(key) % _size;
+            for (int i = 0; i < _entries[index].size(); i++) {
+                if (_entries[index].get(i)._key == key) {
+                    _entries[index].set_at(i, val);
+                    return;
+                }
+            }
+        }
+    };
+}
+
+#endif //TRIES_HASH_TABLE_H

@@ -2,38 +2,37 @@
 #include <stdexcept>
 #include <iostream>
 #include <cmath>
-#include "my_string.h"
-#include "my_vector.h"
+#include "mstring.h"
 
 using namespace std;
 
-my_string::my_string() : _len(1) {
+mstd::string::string() : _len(1) {
     _str = new char[1];
     _str[0] = '\0';
     _len = 1;
 }
 
-my_string::my_string(char *str) {
+mstd::string::string(char *str) {
 
     _len = (int) strlen(str) + 1;
     _str = new char[_len];
     strcpy(_str, str);
 }
 
-my_string::my_string(const char *str) {
+mstd::string::string(const char *str) {
     _len = (int) strlen(str) + 1;
     _str = new char[_len];
     strcpy(_str, str);
 }
 
-my_string::my_string(char c) {
+mstd::string::string(char c) {
     _str = new char[2];
     _len = 2;
     _str[0] = (char) c;
     _str[1] = '\0';
 }
 
-my_string::my_string(const my_string &other) {
+mstd::string::string(const mstd::string &other) {
     if (other._str != nullptr) {
         _len = (int) strlen(other._str) + 1;
         _str = new char[_len + 1];
@@ -46,7 +45,7 @@ my_string::my_string(const my_string &other) {
     _str[0] = '\0';
 }
 
-my_string::my_string(int num) {
+mstd::string::string(int num) {
     char tmp[20];
     sprintf(tmp, "%d", num);
 
@@ -56,23 +55,41 @@ my_string::my_string(int num) {
 }
 
 
-my_string::~my_string() {
+mstd::string::~string() {
     delete[] _str;
     _str = nullptr;
 }
 
-const char *my_string::c_str() { return _str; }
+const char *mstd::string::c_str() {
+    return _str;
+}
 
-string my_string::cpp_str() { 
-	string str = _str;
+std::string mstd::string::cpp_str() {
+	std::string str = _str;
 	return str;
 }
 
-size_t my_string::length() { return strlen(_str); }
+size_t mstd::string::length() { return strlen(_str); }
 
-my_vector<my_string> my_string::split(char *delim) {
+mstd::vector<mstd::string> mstd::string::split(char *delim) {
 
-    my_vector<my_string> list;
+    mstd::vector<mstd::string> list;
+
+    char *tmp_str = new char[strlen(_str) + 1];
+    strcpy(tmp_str, _str);
+    char *token = strtok(tmp_str, delim);
+
+    while (token != nullptr) {
+        list.push(token);
+        token = strtok(nullptr, delim);
+    }
+
+    delete[] tmp_str;
+    return list;
+}
+
+mstd::vector<mstd::string> mstd::string::split(const char *delim) {
+	mstd::vector<mstd::string> list;
 
     char *tmp_str = new char[strlen(_str) + 1];
     strcpy(tmp_str, _str);
@@ -87,26 +104,10 @@ my_vector<my_string> my_string::split(char *delim) {
     return list;
 }
 
-my_vector<my_string> my_string::split(const char *delim) {
-	my_vector<my_string> list;
-
-    char *tmp_str = new char[strlen(_str) + 1];
-    strcpy(tmp_str, _str);
-    char *token = strtok(tmp_str, delim);
-
-    while (token != nullptr) {
-        list.push(token);
-        token = strtok(NULL, delim);
-    }
-
-    delete[] tmp_str;
-    return list;
-}
-
-my_vector<my_string> my_string::split(char delim) {
-	my_vector<my_string> list;
+mstd::vector<mstd::string> mstd::string::split(char delim) {
+	mstd::vector<mstd::string> list;
 	
-	my_string tmp_str = "";
+	mstd::string tmp_str = "";
 	bool pushed = false;
 	for (int c = 0; c < (int) strlen(_str); c++) {
 		if (_str[c] == delim) {
@@ -126,7 +127,7 @@ my_vector<my_string> my_string::split(char delim) {
 	return list;
 }
 
-my_string my_string::substr(int start, int length) {
+mstd::string mstd::string::substr(int start, int length) {
     if ((start + length) >= (int) _len) {
         throw std::runtime_error("Bad length");
     }
@@ -139,22 +140,22 @@ my_string my_string::substr(int start, int length) {
     }
     tmp[j] = '\0';
 
-    my_string tmp_str = tmp;
+    mstd::string tmp_str = tmp;
     delete[] tmp;
     return tmp_str;
 
 }
 
-void my_string::replace(char old, char n) {
+void mstd::string::replace(char old, char n) {
     for (int i = 0; i < (int) strlen(_str); i++) {
         if (_str[i] == old)
             _str[i] = n;
     }
 }
 
-int my_string::to_int() { return atoi(_str); }
+int mstd::string::to_int() { return atoi(_str); }
 
-void my_string::remove(char c) {
+void mstd::string::remove(char c) {
     char *tmp = new char[strlen(_str) + 1];
 
     int j = 0;
@@ -168,23 +169,23 @@ void my_string::remove(char c) {
     _len = strlen(tmp) + 1;
 }
 
-bool my_string::contains(char *str) {
+bool mstd::string::contains(char *str) {
     return strstr(_str, str) != nullptr;
 }
 
-bool my_string::contains(const my_string& other) {
+bool mstd::string::contains(const mstd::string& other) {
     return strstr(_str, other._str) != nullptr;
 }
 
-bool my_string::contains(const char *str) {
+bool mstd::string::contains(const char *str) {
     return strstr(_str, str) != nullptr;
 }
 
-void my_string::remove_substr(const my_string &other) {
+void mstd::string::remove_substr(const mstd::string &other) {
     remove_substr(other._str);
 }
 
-void my_string::remove_substr(const char *str) {
+void mstd::string::remove_substr(const char *str) {
     size_t length = strlen(str);
     size_t this_len = strlen(_str);
     char *sub = strstr(_str, str);
@@ -209,7 +210,7 @@ void my_string::remove_substr(const char *str) {
     _len = strlen(_str) + 1;
 }
 
-void my_string::remove_substr(char *str) {
+void mstd::string::remove_substr(char *str) {
     size_t length = strlen(str);
     size_t this_len = strlen(_str);
     char *sub = strstr(_str, str);
@@ -234,24 +235,24 @@ void my_string::remove_substr(char *str) {
     _len = strlen(_str) + 1;
 }
 
-bool my_string::starts_with(char *str) {
+bool mstd::string::starts_with(char *str) {
     char *c = strstr(_str, str);
     return c == _str;
 }
 
-bool my_string::starts_with(const my_string &other) {
+bool mstd::string::starts_with(const mstd::string &other) {
     return starts_with(other._str);
 }
 
-bool my_string::starts_with(const char *str) {
+bool mstd::string::starts_with(const char *str) {
     char *c = strstr(_str, str);
     // If _str contains str
-    // AND the start of that string is the start of the string (_str)
+    // AND the start of that mstring is the start of the mstring (_str)
     // we return true
     return c == _str;
 }
 
-my_string &my_string::operator=(const my_string& other) {
+mstd::string &mstd::string::operator=(const mstd::string& other) {
     delete[] _str;
 
     if (other._str == nullptr) {
@@ -267,7 +268,7 @@ my_string &my_string::operator=(const my_string& other) {
     return *this;
 }
 
-my_string &my_string::operator=(const char *str) {
+mstd::string &mstd::string::operator=(const char *str) {
     delete[] _str;
 
     _len = strlen(str) + 1;
@@ -276,7 +277,7 @@ my_string &my_string::operator=(const char *str) {
     return *this;
 }
 
-my_string &my_string::operator=(char *str) {
+mstd::string &mstd::string::operator=(char *str) {
     delete[] _str;
     if (str == nullptr) {
         _len = 0;
@@ -291,7 +292,7 @@ my_string &my_string::operator=(char *str) {
     return *this;
 }
 
-my_string &my_string::operator+=(const my_string& other) {
+mstd::string &mstd::string::operator+=(const mstd::string& other) {
 
     char *tmp = new char[_len + other._len + 2];
 
@@ -316,7 +317,7 @@ my_string &my_string::operator+=(const my_string& other) {
 
 
 
-my_string &my_string::operator+=(const char *str) {
+mstd::string &mstd::string::operator+=(const char *str) {
     char *tmp = new char[strlen(_str) + strlen(str) + 2];
 
 
@@ -336,14 +337,10 @@ my_string &my_string::operator+=(const char *str) {
 }
 
 
-my_string &my_string::operator+=(const char c) {
+mstd::string &mstd::string::operator+=(const char c) {
     _len += 1;
 
     char *tmp = new char[_len + 1];
-
-    /*for (int i = 0; i < (int) _len; i++) {
-        tmp[i] = _str[i];
-    }*/
 
     strcpy(tmp, _str);
 
@@ -357,20 +354,8 @@ my_string &my_string::operator+=(const char c) {
     return *this;
 }
 
-my_string &my_string::operator+=(int num) {
-//    char tmp[20];
-//    char *tmp_str = new char[strlen(_str) + 1];
-//    strcpy(tmp_str, _str);
-//    delete[] _str;
-//    _len = (size_t) sprintf(tmp, "%d", num);
-//
-//    _str = new char[_len + strlen(tmp_str) + 2];
-//    strcpy(_str, tmp_str);
-//    delete[] tmp_str;
-//    strcat(_str, tmp);
-//
-//    return *this;
-    my_string tmp(num);
+mstd::string &mstd::string::operator+=(int num) {
+    mstd::string tmp(num);
 
     char *tmp_str = new char[_len + 1];
     strcpy(tmp_str, _str);
@@ -387,7 +372,7 @@ my_string &my_string::operator+=(int num) {
     return *this;
 }
 
-char my_string::operator[](int index) {
+const char mstd::string::operator[](int index) {
     if (index > (int) (_len - 1)) {
         throw std::runtime_error("Index out of range");
     }
@@ -395,34 +380,64 @@ char my_string::operator[](int index) {
     return _str[index];
 }
 
-bool my_string::operator==(const my_string& other) {
+mstd::string mstd::operator+(const mstd::string &first, const mstd::string &second) {
+    mstd::string tmp = first;
+    return tmp += second;
+}
+
+mstd::string mstd::operator+(const mstd::string &first, const char *other) {
+    mstd::string tmp = first;
+    return tmp += other;
+}
+
+mstd::string mstd::operator+(const char *first, const mstd::string &other) {
+    mstd::string tmp = first;
+    return tmp += other;
+}
+
+const bool mstd::string::operator==(const mstd::string& other) {
     if (_str == nullptr) return false;
     return (strcmp(_str, other._str) == 0);
 }
 
-bool my_string::operator==(const char *str) {
+const bool mstd::string::operator==(const char *str) {
     if (str == nullptr) return false;
     if (_str == nullptr) return false;
     return (strcmp(_str, str) == 0);
 }
 
-bool my_string::operator!=(const my_string &other) {
+const bool mstd::string::operator!=(const mstd::string &other) {
     if (_str == nullptr) return false;
     return (strcmp(_str, other._str) != 0);
 }
 
-bool my_string::operator!=(const char *str) {
+const bool mstd::string::operator!=(const char *str) {
     if (_str == nullptr) return false;
     return (strcmp(_str, str) != 0);
 }
 
+const bool mstd::string::operator>(const mstd::string &other) {
+    return strcmp(_str, other._str) > 0;
+}
 
-std::ostream &operator<<(std::ostream &out, my_string str) {
+const bool mstd::string::operator>(const char *str) {
+    return strcmp(_str, str) > 0;
+}
+
+const bool mstd::string::operator<(const mstd::string &other) {
+    return strcmp(_str, other._str) < 0;
+}
+
+const bool mstd::string::operator<(const char *str) {
+    return strcmp(_str, str) < 0;
+}
+
+
+std::ostream &mstd::operator<<(std::ostream &out, mstd::string str) {
     if (str._str == nullptr) {
         out << "null";
-        return out;
+    } else {
+        out << str._str;
     }
-
-    out << str._str;
     return out;
 }
